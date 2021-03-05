@@ -1,0 +1,28 @@
+$primary: #4e97c3 !default;
+$secondary: #3B56BF !default;
+
+.carousel-indicators li {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50%;
+  outline: none;
+}
+
+.carousel {
+  width: 1250px;
+  margin: 0 auto;
+  height: 610px !important;
+}
+
+.carousel img {
+  height: 610px !important;
+}
+
+a.nav-link.router-link-exact-active.router-link-active {
+  color: #fff;
+  font-weight: 600;
+}
+
+.bg-light {
+  background-color: #3B56BF !important;
+}
