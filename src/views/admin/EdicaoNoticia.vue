@@ -1,6 +1,6 @@
 <template>
   <div>
-    <sidebar-titulo nomeTitulo="Cadastro"></sidebar-titulo>
+    <sidebar-titulo nomeTitulo="Edição"></sidebar-titulo>
 
     <div class="form-container">
       <b-form class="container mt-4">
@@ -11,7 +11,6 @@
             type="text"
             v-model="noticia.titulo"
             placeholder="Título"
-            required
           ></b-form-input>
         </b-form-group>
 
@@ -20,7 +19,6 @@
           <b-form-file
             class="mb-2"
             id="img-card"
-            required
             placeholder="Escolha um arquivo ou solte-o aqui... Arquivo de proporção 1:1"
             drop-placeholder="Solte o arquivo aqui..."
             @change="previewImage"
@@ -38,7 +36,7 @@
           <b-form-file
             class="mb-2"
             id="img-destaque"
-            required
+            
             placeholder="Escolha um arquivo ou solte-o aqui... Arquivo de proporção 16:9"
             drop-placeholder="Solte o arquivo aqui..."
             @change="previewImageDest"
@@ -55,6 +53,7 @@
 
         <label for="conteudo">Conteúdo:</label>
         <ckeditor
+          id="editor"
           :editor="editor"
           tag-name="textarea"
           v-model="noticia.editorData"
@@ -63,7 +62,7 @@
 
         <b-form-group class="mt-3" v-slot="{ ariaDescribedby }">
           <b-form-checkbox-group
-            id="checkbox-group-1"
+            id="selecao"
             v-model="noticia.selecao"
             :options="opcoes"
             :aria-describedby="ariaDescribedby"
@@ -73,8 +72,9 @@
           <div class="data mt-4" style="display: flex; align-items: center;">
             <span class="mr-2">Data de Postagem:</span>
             <b-input
+              id="data"
               type="date"
-              required
+              
               v-model="noticia.data"
               style="width: 200px"
             ></b-input>
@@ -88,7 +88,7 @@
             type="text"
             v-model="noticia.autor"
             placeholder="Autor"
-            required
+            
           ></b-form-input>
         </b-form-group>
       </b-form>
@@ -98,9 +98,9 @@
         pill
         variant="primary"
         class="mt-4 mb-4"
-        @click="addNoticia()"
+        @click="editNoticia()"
       >
-        Adicionar noticia
+        Atualizar noticia
       </b-button>
     </div>
   </div>
@@ -124,6 +124,7 @@ export default {
 
   data () {
     return {
+      noticiaData: [],
       noticia: {
         titulo: '',
         cardImg: null,
@@ -170,21 +171,71 @@ export default {
     }
   },
 
+  mounted() {
+    this.pushForm()
+  },
+
   methods: {
-    addNoticia () {
-      const noticia = this.$firebase.firestore().collection('noticias')
+    async editNoticia (idUrl) {
+      const noticia = await this.$firebase.firestore().collection('noticias')
 
       noticia
-        .add(this.noticia)
-        .then(docRef => {
-          console.log(docRef.id)
-
-          alert("Notícia Adicionada")
+        .ref(idUrl)
+        .set({
+          titulo: this.noticia.titulo,
+          cardImg: this.noticia.cardImg,
+          imgDest: this.noticia.imgDest,
+          selecao: this.noticia.selecao,
+          data: this.noticia.data,
+          autor: this.noticia.autor,
+          editorData: this.noticia.editorData
+        })
+        .then(noticia => {
+          alert("Notícia Atualizada")
+          console.log(noticia.data())
         })
         .catch(error => {
           console.error(error)
           alert('Usuário não autorizado!!!')
         })
+    },
+
+    async getNoticia() {
+      return await this.$firebase
+        .firestore()
+        .collection('noticias')
+        .get()
+    },
+
+    async pushForm() {
+      try {
+        const snap = await this.getNoticia()
+        if (snap.length === 0) {
+          return
+        }
+
+        const Url = window.location.href
+        const idUrl = Url.split('noticia/')[1]
+
+        snap.forEach(noticiaDTO => {
+          if(noticiaDTO.id === idUrl) {
+            const noticia = noticiaDTO.data()
+
+            const titulo = document.querySelector('#titulo')
+            titulo.value = noticia.titulo
+
+            const data = document.querySelector('#data')
+            data.value = noticia.data
+
+            const autor = document.querySelector('#autor')
+            autor.value = noticia.autor
+
+            console.log(noticia)
+          }
+        })
+      } catch (error) {
+        throw new Error(error)
+      }
     },
 
     previewImage (event) {

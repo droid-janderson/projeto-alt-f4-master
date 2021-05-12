@@ -1,56 +1,34 @@
 <template>
-  <div class="container-fluid">
-    {{noticias}}
-
-    <p ></p>
-  </div>
+  <div class="container" v-html="noticia[0]"></div>
 </template>
 
 <script>
 export default {
   data () {
     return {
-      noticias: []
+      noticia: []
     }
   },
 
   mounted() {
-    this.fetchNoticia()
-  },
-
-  methods: {
-    async fetchNoticias () {
-      return await this.$firebase
-        .firestore()
-        .collection('noticias')
-        .get()
-    },
-
-    async fetchNoticia () {
-      try {
-        const noticias = await this.fetchNoticias()
-
-        if (noticias.length === 0) {
-          return
-        }
-
+    const db = this.$firebase.firestore();
+    db
+      .collection('noticias')
+      .get()
+      .then(snap => {
         const Url = window.location.href
 
         const idUrl = Url.split('noticia/')[1]
 
-        noticias.forEach(noticia => {
+        snap.forEach(noticia => {
           if(noticia.id === idUrl) {
-            console.log(noticia.data())
 
-            const ContentHtml = noticia.data().editorData.slice(1, -1)
-            this.noticias.push(noticia.data().editorData)
+            this.noticia.push(noticia.data().editorData)
+            console.log(noticia.data().editorData)
           }
         })
+      });
 
-      } catch (err) {
-        console.log(err)
-      }
-    }
   }
 }
 </script>

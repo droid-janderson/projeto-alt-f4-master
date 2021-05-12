@@ -4,7 +4,7 @@
     <b-carousel
       id="carousel-1"
       v-model="slide"
-      :interval="4000"
+      :interval="3500"
       controls
       indicators
       img-width="1024"
@@ -15,13 +15,13 @@
       class="mt-3"
     >
       <!-- Text slides with image -->
-      <b-carousel-slide img-src="img/full hd/avelar.png"></b-carousel-slide>
+      <b-carousel-slide 
+        v-for="card in cards" 
+        :key="card.id" 
+        v-bind:img-src="card.data().imgDest"
+      ></b-carousel-slide>
 
       <!-- Slides with custom text -->
-      <b-carousel-slide img-src="img/full hd/lendasrpg.png"> </b-carousel-slide>
-
-      <!-- Slides with image only -->
-      <b-carousel-slide img-src="img/full hd/MEMEMCARD.png"></b-carousel-slide>
     </b-carousel>
 
     <div class="container">
@@ -93,10 +93,6 @@ export default {
         }
 
         cards.forEach(card => {  
-          // cards.sort((a, b) => {
-          //   return (a.card.data().data > b.card.data().data) ? 1 : ((b.card.data().data > a.card.data().data) ? -1 : 0);
-          // });
-
           this.cards.push(card)
 
           console.log(card.data())

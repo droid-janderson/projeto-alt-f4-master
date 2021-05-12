@@ -71,6 +71,11 @@ const routes = [
         path: '/cadastro-noticia',
         name: 'Cadastro-noticia',
         component: () => import('../views/admin/CadastroNoticia.vue')
+      },
+      {
+        path: '/edicao-noticia/:id',
+        name: 'Edicao-noticia',
+        component: () => import('../views/admin/EdicaoNoticia')
       }
     ]
   }
