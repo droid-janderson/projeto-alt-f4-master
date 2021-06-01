@@ -1,9 +1,8 @@
 <template>
   <div>
-    <sidebar-titulo nomeTitulo="Edição"></sidebar-titulo>
-
-    <div class="form-container">
-      <b-form @submit.prevent="update">
+    <sidebar-titulo nomeTitulo="Cadastro"></sidebar-titulo>
+    <div>
+      <div class="form-container">
         <b-form class="container mt-4">
           <b-form-group>
             <label for="titulo">Título:</label>
@@ -55,7 +54,6 @@
 
           <label for="conteudo">Conteúdo:</label>
           <ckeditor
-            id="editor"
             :editor="editor"
             tag-name="textarea"
             v-model="noticia.editorData"
@@ -64,7 +62,7 @@
 
           <b-form-group class="mt-3" v-slot="{ ariaDescribedby }">
             <b-form-checkbox-group
-              id="selecao"
+              id="checkbox-group-1"
               v-model="noticia.selecao"
               :options="opcoes"
               :aria-describedby="ariaDescribedby"
@@ -74,7 +72,6 @@
             <div class="data mt-4" style="display: flex; align-items: center">
               <span class="mr-2">Data de Postagem:</span>
               <b-input
-                id="data"
                 type="date"
                 v-model="noticia.data"
                 style="width: 200px"
@@ -92,11 +89,17 @@
             ></b-form-input>
           </b-form-group>
         </b-form>
-      </b-form>
 
-      <b-button type="submit" pill variant="primary" class="mt-4 mb-4">
-        Atualizar noticia
-      </b-button>
+        <b-button
+          type="button"
+          pill
+          variant="primary"
+          class="mt-4 mb-4"
+          @click="addNoticia()"
+        >
+          Atualizar
+        </b-button>
+      </div>
     </div>
   </div>
 </template>
@@ -105,7 +108,6 @@
 import SidebarTitulo from "../../components/SidebarTitulo.vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import MyUploadAdapter from "@/plugins/UploadAdapter";
-import { reactive, onMounted } from "vue";
 
 export default {
   components: {
@@ -120,7 +122,6 @@ export default {
 
   data() {
     return {
-      noticiaData: [],
       noticia: {
         titulo: "",
         cardImg: null,
@@ -168,68 +169,40 @@ export default {
   },
 
   mounted() {
-    const doc = getNoticia(docId.value);
-    console.log(doc, docId.value);
-    noticia.titulo = doc.titulo;
-    noticia.cardImg = doc.cardImg;
-    noticia.imgDest = doc.imgDest;
-    noticia.selecao = doc.selecao;
-    noticia.data = doc.data;
-    noticia.autor = doc.autor;
-    noticia.editorData = doc.editorData;
-  },
+    const db = this.$firebase.firestore();
+    db.collection("noticias")
+      .get()
+      .then((snap) => {
+        const Url = window.location.href;
 
-  setup() {
-    const updatedoc = async (id, doc) => {
-      return await this.$firebase.firestore.doc(id).update(doc);
-    };
+        const idUrl = Url.split("noticia/")[1];
 
-    const Url = window.location.href;
-
-    const docId = Url.split("noticia/")[1];
-
-    const getNoticia = async (id) => {
-      const doc = await this.$firebase.firestore.collection('noticias').doc(id).get();
-      console.log(doc);
-      return doc.exists ? doc.data() : null;
-    };
-
-    
-
-    const noticia = reactive({
-      titulo: "",
-      cardImg: null,
-      imgDest: null,
-      selecao: [],
-      data: null,
-      autor: "",
-      editorData: "",
-    });
-
-    const update = async () => {
-      await updatedoc(docId.value, { ...noticia });
-      this.noticia.push("/");
-      noticia.titulo = "";
-      noticia.cardImg = null;
-      noticia.imgDest = null;
-      noticia.selecao = [];
-      noticia.data = null;
-      noticia.autor = "";
-      noticia.editorData = "";
-    };
-
-    return {
-      noticia,
-      update,
-      previewImage,
-      onUpload,
-      previewImageDest,
-      onUploadDest,
-      uploader,
-    };
+        snap.forEach((noticia) => {
+          if (noticia.id === idUrl) {
+            this.noticia = noticia.data()
+            console.log(noticia.data());
+          }
+        });
+      });
   },
 
   methods: {
+    addNoticia() {
+      const noticia = this.$firebase.firestore().collection("noticias");
+
+      noticia
+        .update(this.noticia)
+        .then((docRef) => {
+          console.log(docRef.data());
+
+          alert("Notícia Adicionada");
+        })
+        .catch((error) => {
+          console.error(error);
+          alert("Usuário não autorizado!!!");
+        });
+    },
+
     previewImage(event) {
       this.noticia.cardImg = null;
       this.imageData = event.target.files[0];

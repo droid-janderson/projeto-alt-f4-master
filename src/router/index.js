@@ -75,7 +75,7 @@ const routes = [
       {
         path: '/edicao-noticia/:id',
         name: 'Edicao-noticia',
-        component: () => import('../views/admin/EdicaoNoticia')
+        component: () => import('../views/admin/EditNoticia')
       }
     ]
   }
