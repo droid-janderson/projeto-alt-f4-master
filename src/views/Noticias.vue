@@ -8,7 +8,7 @@
         </b-button>
       </div>
 
-    <div v-for="card in cards" :key="card.id">
+      <div v-for="card in cards" :key="card.id">
         <b-card
           v-bind:img-src="card.data().cardImg"
           v-bind:img-alt="card.data().titulo"
@@ -27,58 +27,68 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
-  data () {
+  data() {
     return {
       cards: [],
-      isLoading: true
-    }
+      isLoading: true,
+    };
   },
 
-  mounted () {
-    this.fetchCards()
+  mounted() {
+    this.fetchCards();
   },
 
   methods: {
-    showDetails (id) {
-      this.$router.push({ name: 'Noticia', params: { id } })
+    showDetails(id) {
+      this.$router.push({ name: "Noticia", params: { id } });
     },
 
-    setLoading (state) {
-      if (typeof state !== 'boolean') {
-        return
+    setLoading(state) {
+      if (typeof state !== "boolean") {
+        return;
       }
 
-      this.isLoading = state
+      this.isLoading = state;
     },
 
-    async fetchNoticias () {
+    async fetchNoticias() {
       return await this.$firebase
         .firestore()
-        .collection('noticias')
+        .collection("noticias")
         .where("selecao", "array-contains", "noticia")
-        .get()
+        .get();
     },
 
-    async fetchCards () {
+    async fetchCards() {
+      const dataAtual = moment().format("YYYY-MM-DD")
       try {
-        const cards = await this.fetchNoticias()
+
+        const cards = await this.fetchNoticias();
 
         if (cards.length === 0) {
-          return
+          return;
         }
 
-        cards.forEach(card => {
-          this.cards.push(card)
-        })
+        cards.forEach((card) => {
+          const dataCard = card.data().data;
 
-        this.setLoading(false)
+          if(dataCard > dataAtual) {
+            return;
+          }
+          
+          this.cards.push(card);
+        });
+
+        this.setLoading(false);
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style scoped>
 .container {

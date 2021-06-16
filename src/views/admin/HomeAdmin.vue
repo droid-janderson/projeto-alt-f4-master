@@ -1,8 +1,23 @@
 <template>
   <div class="container-inicial">
     <sidebar-titulo nomeTitulo="Notícias"></sidebar-titulo>
-    <b-table striped hover :items="noticias">
-    </b-table>
+      <table class="container table table-bordered table-striped table-hover"  style="font-size: 20px; margin: 50px auto">
+        <thead>
+          <tr class="uppercase">
+            <th>Titulo</th>
+            <th>Autor</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody v-for="noticia in noticias" :key="noticia.id">
+          <tr>
+            <td>{{noticia.data().titulo}}</td>
+            <td>{{noticia.data().autor}}</td>
+            <td>{{noticia.data().data}}</td>
+            <b-button @click="EditNoticia()">Editar</b-button>
+          </tr>
+        </tbody>
+      </table>
   </div>
 </template>
 
@@ -40,7 +55,7 @@ export default {
         } 
         
         noticias.forEach(noticia => {
-          this.noticias.push(noticia.data())
+          this.noticias.push(noticia)
         }) 
       } catch (err) {
         console.log(err)

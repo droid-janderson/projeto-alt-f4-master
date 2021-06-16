@@ -95,7 +95,7 @@
           pill
           variant="primary"
           class="mt-4 mb-4"
-          @click="addNoticia()"
+          @click="EditNoticia()"
         >
           Atualizar
         </b-button>
@@ -187,15 +187,16 @@ export default {
   },
 
   methods: {
-    addNoticia() {
-      const noticia = this.$firebase.firestore().collection("noticias");
+    EditNoticia() {
+      const Url = window.location.href;
+      const idUrl = Url.split("noticia/")[1];
+
+      const noticia = this.$firebase.firestore().collection("noticias").doc(idUrl)
 
       noticia
         .update(this.noticia)
-        .then((docRef) => {
-          console.log(docRef.data());
-
-          alert("Notícia Adicionada");
+        .then(() => {
+          alert("Notícia Atualizada");
         })
         .catch((error) => {
           console.error(error);
