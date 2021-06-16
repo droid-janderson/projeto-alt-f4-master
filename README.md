@@ -32,6 +32,3 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
-
-##URL
-https://radical-dreamers-2020.web.app/
