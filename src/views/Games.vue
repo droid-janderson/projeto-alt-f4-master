@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   data () {
     return {
@@ -59,6 +61,7 @@ export default {
     },
 
     async fetchCards () {
+      const dataAtual = moment().format("YYYY-MM-DD")
       try {
         const cards = await this.fetchNoticias()
 
@@ -67,6 +70,12 @@ export default {
         }
 
         cards.forEach(card => {
+          const dataCard = card.data().data;
+
+          if(dataCard > dataAtual) {
+            return;
+          }
+
           this.cards.push(card)
         })
 

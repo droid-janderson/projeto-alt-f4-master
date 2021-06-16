@@ -34,6 +34,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.container {
+  margin: 50px auto;
+}
+
 p span {
   font-size: small;
 }

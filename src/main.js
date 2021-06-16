@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import store from './store'
+import moment from 'moment'
 import './registerServiceWorker'
 import router from './router/index.js'
 import CKEditor from '@ckeditor/ckeditor5-vue2'
@@ -11,6 +12,7 @@ import firebaseApp from './firebase/index'
 Vue.use(BootstrapVue)
 Vue.use(firebaseApp)
 Vue.use(CKEditor)
+Vue.use(moment)
 
 Vue.config.productionTip = false
 

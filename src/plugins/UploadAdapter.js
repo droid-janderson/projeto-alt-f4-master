@@ -1,7 +1,5 @@
-import firebase from 'firebase/app'
-
 class UploadAdapter {
-  constructor (loader, firebase) {
+  constructor (loader) {
     // The file loader instance to use during the upload.
     this.loader = loader
   }
